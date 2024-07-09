@@ -7,6 +7,10 @@
     <title>Blog - Listado de Entradas y Nueva Entrada</title>
     <link rel="stylesheet" href="css_blog.css">
 </head>
+<?php
+session_start();
+$_SESSION["user"] = 1
+    ?>
 
 <body>
     <header>
@@ -53,7 +57,7 @@
 
         <section id="nueva" class="section">
             <h2>Nueva Entrada</h2>
-            <form action="/controllers/posts.php?action=create" method="post" enctype="multipart/form-data">
+            <form action="../includes/newpost.php" method="post" enctype="multipart/form-data">
                 <div>
                     <label for="title">Título</label>
                     <input type="text" id="title" name="title" required>
@@ -64,9 +68,18 @@
                 </div>
                 <div>
                     <label for="image">Imagen</label>
-                    <input type="file" id="image" name="image">
+                    <input type="file" id="image" name="file">
                 </div>
-                <button type="submit">Crear Entrada</button>
+                <div>
+                    <label for="image">alt</label>
+                    <input type="text" id="alt" name="alt">
+                </div>
+                <div>
+
+                    <input type="hidden" id="user" name="user" value="<?= $_SESSION['user'] ?>" readonly>
+
+                </div>
+                <button type="submit" name="send">Crear Entrada</button>
             </form>
         </section>
     </main>

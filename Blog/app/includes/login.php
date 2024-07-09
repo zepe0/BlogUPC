@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["send"])) {
     $login = new UserContr($username, $password);
 
     $login->loginUser();
-    echo "fo";
-    header("Location: ../view/login.html?error=none");
+  
+/*     header("Location: ../view/login.html?error=none"); */
 
 }

@@ -8,7 +8,7 @@ class UserContr extends usuario
     private $email;
     private $rememberme;
 
-    public function __construct($username, $password, $repeatPwd = "", $email = "")
+    public function __construct($username, $password, $email = "", $repeatPwd = "")
     {
         $this->username = $username;
         $this->password = $password;
@@ -67,23 +67,29 @@ class UserContr extends usuario
     {
 
         //validation
-        if ($this->emptyInput($this->username) == false || $this->emptyInput($this->password) == false || $this->emptyInput($this->repeatPwd) == false || $this->emptyInput($this->email) == false) {
-            header("Location: ../views/signup.html?error=emptyInput");
+        if ($this->emptyInput($this->username) == false || $this->emptyInput($this->password) == false || $this->emptyInput($this->email) == false) {
+            header("Location: ../views/users_register.php?error=camposvacios");
+
+
             exit();
         }
         if ($this->usernameTakenCheck() == 2) {
-            header("Location: ../views/signup.html?error=UsernameTaken");
+            header("Location: ../views/users_register.php?error=El Usuario ya existe");
             exit();
         }
         if ($this->usernameTakenCheck() == 1) {
-            header("Location: ../views/signup.html?error=FailedStmt");
+            header("Location: ../views/users_register.php?error=Fallo en la conexión");
             exit();
         }
 
         //setUser to DB
         if ($this->setUser($this->username, $this->password, $this->email)) {
-            header("Location: ../views/signup.html?error=FailedStmt");
+            header("Location: ../views/home.php");
+        } else {
+
+            header("Location: ../views/users_register.php?error=Fallo en el alta");
         }
+
     }
 
     public function loginUser()
@@ -96,17 +102,43 @@ class UserContr extends usuario
         }
 
         //verifyUser in DB
-        $res = $this->verifyLoginUser($this->username, $this->password);
+        $res = $this->checkPass($this->username, $this->password);
         if ($res == 1) {
             header("Location: ../views/users_login.php?error=Fallo en la  verificación");
 
         }
         if ($res == 2) {
-            header("Location: ../views/users_login.php?error=Credenciales  incorrectas");
+            header("Location: ../views/users_login.php?error=El Usuario no existe");
 
+        }
+        if ($res == 3) {
+            header("Location: ../views/users_login.php?error=Contraseña incorrecta");
         }
         if ($res == 0) {
             return true;
+        }
+    }
+
+    public function registerUser()
+    {
+
+        //validation
+        if ($this->emptyInput($this->username) == false || $this->emptyInput($this->password) == false || $this->emptyInput($this->repeatPwd) == false || $this->emptyInput($this->email) == false) {
+            header("Location: ../views/users_register.php?error=emptyInput");
+            exit();
+        }
+        if ($this->usernameTakenCheck() == 2) {
+            header("Location: ../views/users_register.php?error=UsernameTaken");
+            exit();
+        }
+        if ($this->usernameTakenCheck() == 1) {
+            header("Location: ../views/users_register.php?error=FailedStmt");
+            exit();
+        }
+
+        //setUser to DB
+        if ($this->setUser($this->username, $this->password, $this->email)) {
+            header("Location: ../views/users_register.php?error=FailedStmt");
         }
     }
 

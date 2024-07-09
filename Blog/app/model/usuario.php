@@ -1,76 +1,58 @@
+
 <?php
-class usuario extends connection
-{
+class usuario extends connection {
 
 
-    protected function checkUser($username, $email)
-    {
-        $error = 0;
-        $stmt = $this->connect()->prepare("SELECT username FROM usuarios WHERE username = ? OR email = ?;");
-        if (!$stmt->execute(array($username, $email))) {
-            $error = 1;
-        }
-        if ($stmt->rowCount() > 0) {
-            $error = 2;
-        }
-        $stmt = null;
-        return $error;
-    }
-
-    protected function checkPass($username, $password)
-    {
-        $error = 0;
-        $stmt = $this->connect()->prepare("SELECT password FROM usuarios WHERE username = ?;");
-
-        if (!$stmt->execute(array($username))) {
-            $error = 1;
-        } else {
-            if ($stmt->rowCount() > 0) {
-                $result = $stmt->fetch();
-                print_r($result);
-                $hashedPwd = $result['password'];
-                echo $hashedPwd;
-                if (password_verify($password, $hashedPwd) != 1) {
-                    $error = 3;
+    protected function checkUser($username, $email){
+            $error = 0;
+            $stmt = $this->connect()->prepare("SELECT username FROM usuarios WHERE username = ? OR email = ?;");
+            if(!$stmt->execute(array($username, $email))){
+                $error = 1;
                 }
-            } else {
+            if($stmt->rowCount()>0){
                 $error = 2;
+                }
+            $stmt = null;
+            return $error;
+        }
+
+    protected function checkPass($username, $password){
+            $error = 0;
+            $stmt = $this->connect()->prepare("SELECT password FROM usuarios WHERE username = ?;");
+
+            if(!$stmt->execute(array($username))){
+                $error = 1;
+            }else{
+                if($stmt->rowCount()>0){
+                    $result = $stmt->fetch();
+                   /*  print_r($result); */
+                    $hashedPwd = $result['password'];
+                /*     echo $hashedPwd; */
+                    if (password_verify($password, $hashedPwd) != 1) {$error = 3;}
+                }else{
+                    $error = 2;
+                }
+                
             }
-
+            $stmt = null;
+            return $error;
         }
-        $stmt = null;
-        return $error;
-    }
-    protected function verifyLoginUser($username, $password)
-    {
-        $error = 0;
-        $stmt = $this->connect()->prepare("SELECT password from users WHERE username = ?");
+  
+    public function setUser($username, $password, $email) {
+            
+            $result = true;
+            $stmt = $this->connect()->prepare("INSERT INTO usuarios (username, password, email) VALUES (?,?,?)");
+            
+            $hashedPwd = password_hash($password, PASSWORD_DEFAULT);
 
-        if (!$stmt->execute(array($username))) {
-            $error = 1;
-        }
-
-        if ($stmt->rowCount() > 0) {
-            $res = $stmt->fetchAll();
-            $hashedPwd = $res[0]['password'];
-
-            $_SESSION["username"] = $username;
-
-            if (password_verify($password, $hashedPwd)) {
-                $error = 2;
+            if(!$stmt->execute(array($username, $hashedPwd, $email))){
+                $result = false;
             }
-        } else {
-            $error = 2;
-        }
-        $stmt = null;
-        return $error;
+           
+            $stmt = null;
+            return $result;
+        }      
 
-    }
-
-
-
-}
-
-
-
+}  
+    
 ?>
